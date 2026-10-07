@@ -1,0 +1,2 @@
+# tests/safe/
+# Place safe (non-vulnerable) Python programs here for testing false-positive rates.
