@@ -1,0 +1,135 @@
+Run started:2026-10-07 17:14:52.960902+00:00
+
+Test results:
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\safe\safe_05_whitelist_lookup.py:18:14
+17	    cursor = conn.cursor()
+18	    query = f"SELECT id, name, price FROM products WHERE category_id = ? ORDER BY {column}"
+19	    cursor.execute(query, (category_id,))
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\safe\safe_06_safe_builder.py:13:14
+12	    placeholders = ", ".join(["?"] * len(id_list))
+13	    query = f"SELECT id, name FROM items WHERE id IN ({placeholders})"
+14	    cursor.execute(query, id_list)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\tricky\tricky_02_fstring_constant_only.py:14:14
+13	    # f-string interpolates only module constants, no untrusted taint
+14	    query = f"SELECT id, action, timestamp FROM {TABLE_NAME} LIMIT {DEFAULT_LIMIT}"
+15	    cursor.execute(query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\tricky\tricky_04_taint_overwritten.py:15:14
+14	    cursor = conn.cursor()
+15	    query = f"SELECT val FROM settings WHERE key = '{user_setting}'"
+16	    cursor.execute(query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\tricky\tricky_06_dead_code_branch.py:13:21
+12	        # Dead code: unreachable vulnerable execution
+13	        dead_query = "SELECT * FROM profiles WHERE uid = '" + user_id + "'"
+14	        cursor.execute(dead_query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\unsafe\unsafe_01_concat_basic.py:10:12
+9	    cursor = conn.cursor()
+10	    query = "SELECT id, username FROM users WHERE username = '" + username + "' AND password = '" + password + "'"
+11	    cursor.execute(query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\unsafe\unsafe_03_fstring_direct.py:10:14
+9	    cursor = conn.cursor()
+10	    query = f"SELECT account_id, balance, owner FROM accounts WHERE account_id = '{account_id}'"
+11	    cursor.execute(query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\unsafe\unsafe_04_fstring_multiline.py:10:16
+9	    cursor = conn.cursor()
+10	    query = f"""
+11	        UPDATE users
+12	        SET email = '{new_email}'
+13	        WHERE user_id = {user_id}
+14	    """
+15	    cursor.execute(query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\unsafe\unsafe_05_percent_format.py:10:12
+9	    cursor = conn.cursor()
+10	    query = "SELECT id, name, salary FROM employees WHERE department = '%s'" % dept_name
+11	    cursor.execute(query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\unsafe\unsafe_06_str_format.py:10:12
+9	    cursor = conn.cursor()
+10	    query = "SELECT order_id, total, status FROM orders WHERE status = '{}'".format(status)
+11	    cursor.execute(query)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: dataset\unsafe\unsafe_07_format_named.py:10:12
+9	    cursor = conn.cursor()
+10	    query = "DELETE FROM user_sessions WHERE token = '{token}'".format(token=session_token)
+11	    cursor.execute(query)
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 301
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 0
+		Medium: 11
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 11
+		Medium: 0
+		High: 0
+Files skipped (0):
