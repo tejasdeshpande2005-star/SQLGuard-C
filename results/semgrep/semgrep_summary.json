@@ -1,0 +1,123 @@
+{
+  "tool": "Semgrep 1.179.0",
+  "command": "semgrep scan --config auto dataset --json -o results/semgrep/semgrep_raw.json",
+  "metrics": {
+    "TP": 6,
+    "FP": 6,
+    "FP_breakdown": {
+      "safe": 2,
+      "tricky": 4
+    },
+    "FN": 1,
+    "TN": 6,
+    "TN_breakdown": {
+      "safe": 4,
+      "tricky": 2
+    },
+    "precision": 0.5,
+    "recall": 0.8571,
+    "f1_score": 0.6316
+  },
+  "details": {
+    "safe/safe_05_whitelist_lookup.py": [
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 19
+      }
+    ],
+    "safe/safe_06_safe_builder.py": [
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 14
+      }
+    ],
+    "tricky/tricky_02_fstring_constant_only.py": [
+      {
+        "check_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "line_number": 15
+      },
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 15
+      }
+    ],
+    "tricky/tricky_03_custom_execute_non_sql.py": [
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 20
+      }
+    ],
+    "tricky/tricky_04_taint_overwritten.py": [
+      {
+        "check_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "line_number": 16
+      },
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 16
+      }
+    ],
+    "tricky/tricky_06_dead_code_branch.py": [
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 14
+      }
+    ],
+    "unsafe/unsafe_01_concat_basic.py": [
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 11
+      }
+    ],
+    "unsafe/unsafe_03_fstring_direct.py": [
+      {
+        "check_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "line_number": 11
+      },
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 11
+      }
+    ],
+    "unsafe/unsafe_04_fstring_multiline.py": [
+      {
+        "check_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "line_number": 15
+      },
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 15
+      }
+    ],
+    "unsafe/unsafe_05_percent_format.py": [
+      {
+        "check_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "line_number": 11
+      },
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 11
+      }
+    ],
+    "unsafe/unsafe_06_str_format.py": [
+      {
+        "check_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "line_number": 11
+      },
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 11
+      }
+    ],
+    "unsafe/unsafe_07_format_named.py": [
+      {
+        "check_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "line_number": 11
+      },
+      {
+        "check_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "line_number": 11
+      }
+    ]
+  }
+}
