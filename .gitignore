@@ -1,16 +1,39 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-.venv/
+*$py.class
+
+# Virtual environments
 venv/
+env/
+.venv/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Node.js dependencies and build output
+frontend/node_modules/
+frontend/dist/
+
+# Local analyzer backup
+sqlguard/analysis/taint_backup.py
+
+# Environment files and secrets
 .env
 .env.*
 !.env.example
-.pytest_cache/
-
-# Node
-node_modules/
-dist/
-
-# Local backups
-taint_backup.py
