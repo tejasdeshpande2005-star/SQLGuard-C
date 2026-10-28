@@ -1,0 +1,2 @@
+# tests/vulnerable/
+# Place vulnerable Python programs here for testing SQLGuard-C detection.

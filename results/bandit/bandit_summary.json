@@ -1,0 +1,100 @@
+{
+  "tool": "Bandit 1.9.4",
+  "command": "bandit -r dataset -f json -o results/bandit/bandit_raw.json",
+  "metrics": {
+    "TP": 6,
+    "FP": 5,
+    "FP_breakdown": {
+      "safe": 2,
+      "tricky": 3
+    },
+    "FN": 1,
+    "TN": 7,
+    "TN_breakdown": {
+      "safe": 4,
+      "tricky": 3
+    },
+    "precision": 0.5455,
+    "recall": 0.8571,
+    "f1_score": 0.6667
+  },
+  "details": {
+    "safe/safe_05_whitelist_lookup.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 18
+      }
+    ],
+    "safe/safe_06_safe_builder.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 13
+      }
+    ],
+    "tricky/tricky_02_fstring_constant_only.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 14
+      }
+    ],
+    "tricky/tricky_04_taint_overwritten.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 15
+      }
+    ],
+    "tricky/tricky_06_dead_code_branch.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 13
+      }
+    ],
+    "unsafe/unsafe_01_concat_basic.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 10
+      }
+    ],
+    "unsafe/unsafe_03_fstring_direct.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 10
+      }
+    ],
+    "unsafe/unsafe_04_fstring_multiline.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 10
+      }
+    ],
+    "unsafe/unsafe_05_percent_format.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 10
+      }
+    ],
+    "unsafe/unsafe_06_str_format.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 10
+      }
+    ],
+    "unsafe/unsafe_07_format_named.py": [
+      {
+        "test_id": "B608",
+        "issue_text": "Possible SQL injection vector through string-based query construction.",
+        "line_number": 10
+      }
+    ]
+  }
+}

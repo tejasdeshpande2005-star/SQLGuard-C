@@ -1,0 +1,272 @@
+{
+  "tool": "SQLGuard-C",
+  "metrics": {
+    "total_examples": 25,
+    "TP": 12,
+    "FP": 0,
+    "FP_breakdown": {
+      "safe": 0,
+      "tricky": 0
+    },
+    "FN": 0,
+    "TN": 13,
+    "TN_breakdown": {
+      "safe": 7,
+      "tricky": 6
+    },
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "per_category": {
+      "safe": {
+        "total": 7,
+        "flagged": 0,
+        "not_flagged": 7
+      },
+      "tricky": {
+        "total": 6,
+        "flagged": 0,
+        "not_flagged": 6
+      },
+      "unsafe": {
+        "total": 12,
+        "flagged": 12,
+        "not_flagged": 0
+      }
+    }
+  },
+  "details": {
+    "safe/safe_01_param_qmark.py": [],
+    "safe/safe_02_param_named.py": [],
+    "safe/safe_03_constant_query.py": [],
+    "safe/safe_04_constant_multiline.py": [],
+    "safe/safe_05_whitelist_lookup.py": [],
+    "safe/safe_06_safe_builder.py": [],
+    "safe/safe_07_helper_parameterized.py": [],
+    "unsafe/unsafe_01_concat_basic.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_01_concat_basic.py",
+        "line": 11,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'password'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'password'",
+          "function parameter password at line 7",
+          "function parameter username at line 7",
+          "query assigned at line 10",
+          "SQL execution sink: cursor.execute(...) at line 11"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_02_concat_variable.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_02_concat_variable.py",
+        "line": 13,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'category'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'category'",
+          "query updated at line 11",
+          "query updated at line 12",
+          "SQL execution sink: cursor.execute(...) at line 13"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_03_fstring_direct.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_03_fstring_direct.py",
+        "line": 11,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'account_id'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'account_id'",
+          "function parameter account_id at line 7",
+          "query assigned at line 10",
+          "SQL execution sink: cursor.execute(...) at line 11"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_04_fstring_multiline.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_04_fstring_multiline.py",
+        "line": 15,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'new_email'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'new_email'",
+          "function parameter new_email at line 7",
+          "function parameter user_id at line 7",
+          "query assigned at line 10",
+          "SQL execution sink: cursor.execute(...) at line 15"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_05_percent_format.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_05_percent_format.py",
+        "line": 11,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'dept_name'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'dept_name'",
+          "function parameter dept_name at line 7",
+          "query assigned at line 10",
+          "SQL execution sink: cursor.execute(...) at line 11"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_06_str_format.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_06_str_format.py",
+        "line": 11,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'status'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'status'",
+          "function parameter status at line 7",
+          "query assigned at line 10",
+          "SQL execution sink: cursor.execute(...) at line 11"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_07_format_named.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_07_format_named.py",
+        "line": 11,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'session_token'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'session_token'",
+          "function parameter session_token at line 7",
+          "query assigned at line 10",
+          "SQL execution sink: cursor.execute(...) at line 11"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_08_multiple_inputs.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_08_multiple_inputs.py",
+        "line": 19,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "input()",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: input()",
+          "email assigned at line 6",
+          "username assigned at line 5",
+          "query assigned at line 11",
+          "SQL execution sink: cursor.execute(...) at line 19"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_09_username_only.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_09_username_only.py",
+        "line": 10,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "input()",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: input()",
+          "username assigned at line 5",
+          "query assigned at line 9",
+          "SQL execution sink: cursor.execute(...) at line 10"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_10_email_only.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_10_email_only.py",
+        "line": 10,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "input()",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: input()",
+          "email assigned at line 5",
+          "query assigned at line 9",
+          "SQL execution sink: cursor.execute(...) at line 10"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_11_helper_function.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_11_helper_function.py",
+        "line": 6,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "parameter 'username'",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: parameter 'username'",
+          "function parameter username at line 4",
+          "query assigned at line 5",
+          "SQL execution sink: cursor.execute(...) at line 6"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "unsafe/unsafe_12_mixed_parameterization.py": [
+      {
+        "file": "D:\\compiler\\SQLGuard-C\\dataset\\unsafe\\unsafe_12_mixed_parameterization.py",
+        "line": 16,
+        "severity": "HIGH",
+        "message": "Untrusted data may reach SQL query text.",
+        "source": "input()",
+        "sink": "cursor.execute()",
+        "variable": "query",
+        "path": [
+          "untrusted source: input()",
+          "sort_column assigned at line 6",
+          "query assigned at line 11",
+          "SQL execution sink: cursor.execute(...) at line 16"
+        ],
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+      }
+    ],
+    "tricky/tricky_01_user_input_not_in_sink.py": [],
+    "tricky/tricky_02_fstring_constant_only.py": [],
+    "tricky/tricky_03_custom_execute_non_sql.py": [],
+    "tricky/tricky_04_taint_overwritten.py": [],
+    "tricky/tricky_05_format_in_logging_only.py": [],
+    "tricky/tricky_06_dead_code_branch.py": []
+  }
+}

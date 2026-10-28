@@ -1,0 +1,142 @@
+"""Lightweight intraprocedural taint analysis for SQLGuard-C's demo prototype."""
+import ast
+from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Set
+
+SQL_WORDS = ("select ", "insert ", "update ", "delete ", "replace ", "with ", "drop ", "alter ")
+
+@dataclass
+class Finding:
+    file: str
+    line: int
+    severity: str
+    message: str
+    source: str
+    sink: str
+    variable: str
+    path: List[str]
+    repair: str
+    def to_dict(self): return asdict(self)
+
+class Analyzer(ast.NodeVisitor):
+    def __init__(self, filename: str, source: str):
+        self.filename=filename; self.source=source; self.lines=source.splitlines()
+        self.tainted: Set[str]=set(); self.origins: Dict[str,str]={}; self.paths: Dict[str,List[str]]={}
+        self.cursor_names: Set[str]=set(); self.safe_parameterized_queries: Set[str]=set(); self.safe_placeholder_vars: Set[str]=set(); self.findings: List[Finding]=[]
+        self.scope_stack=[]
+
+    def expr_taint(self, node: ast.AST):
+        names=[]; is_tainted=False
+        for n in ast.walk(node):
+            if isinstance(n, ast.Name) and n.id in self.tainted:
+                is_tainted=True
+                if n.id not in names: names.append(n.id)
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in {'input'}:
+                is_tainted=True
+                names.append('input()')
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr in {'get','get_json'}:
+                # Common web-request input patterns are treated as untrusted.
+                if isinstance(n.func.value, ast.Attribute) and n.func.value.attr in {'args','form','GET','POST','query_params'}:
+                    is_tainted=True; names.append(ast.unparse(n.func.value))
+        return is_tainted, names
+
+    def expr_is_sql(self,node):
+        text=ast.unparse(node).lower()
+        return any(w in text for w in SQL_WORDS)
+
+    def visit_FunctionDef(self,node):
+        # Function parameters are treated as externally controlled at the function boundary.
+        old_tainted=set(self.tainted); old_origins=dict(self.origins); old_paths=dict(self.paths)
+        for arg in node.args.args:
+            self.tainted.add(arg.arg); self.origins[arg.arg]=f"parameter '{arg.arg}'"
+            self.paths[arg.arg]=[f"function parameter {arg.arg} at line {node.lineno}"]
+        for stmt in node.body: self.visit(stmt)
+        self.tainted=old_tainted; self.origins=old_origins; self.paths=old_paths
+
+    def visit_If(self,node):
+        if isinstance(node.test, ast.Constant) and node.test.value is False:
+            return
+        self.generic_visit(node)
+
+    def visit_Assign(self,node):
+        value=node.value
+        # Track cursor-like objects to avoid treating every custom .execute() as SQL.
+        if isinstance(value,ast.Call) and isinstance(value.func,ast.Attribute) and value.func.attr=='cursor':
+            for t in node.targets:
+                if isinstance(t,ast.Name): self.cursor_names.add(t.id)
+        tainted,names=self.expr_taint(value)
+        # Constant overwrite kills taint (flow-sensitive for straight-line assignments).
+        for target in node.targets:
+            if isinstance(target,ast.Name):
+                name=target.id
+                text=ast.unparse(value)
+                has_placeholder=any(isinstance(x,ast.Constant) and isinstance(x.value,str) and '?' in x.value for x in ast.walk(value))
+                if has_placeholder and '?' in text and any(w in text.lower() for w in SQL_WORDS): self.safe_parameterized_queries.add(name)
+                elif (any(isinstance(x,ast.Name) and x.id in self.safe_placeholder_vars for x in ast.walk(value)) or any(isinstance(x,ast.Name) and 'placeholder' in x.id.lower() for x in ast.walk(value))) and any(w in text.lower() for w in SQL_WORDS): self.safe_parameterized_queries.add(name)
+                if has_placeholder and '?' in text and any(isinstance(x,ast.Constant) and x.value=='?' for x in ast.walk(value)) and not any(isinstance(x,ast.JoinedStr) for x in ast.walk(value)):
+                    self.safe_placeholder_vars.add(name)
+                elif not has_placeholder and not any(isinstance(x,ast.Name) and x.id in self.safe_placeholder_vars for x in ast.walk(value)):
+                    self.safe_placeholder_vars.discard(name)
+                if tainted:
+                    self.tainted.add(name)
+                    source=next((x for x in names if x=='input()' or x not in self.tainted), names[0] if names else 'untrusted input')
+                    self.origins[name]=self.origins.get(names[0], source) if names and names[0] in self.origins else source
+                    prev=[]
+                    for x in names:
+                        prev.extend(self.paths.get(x,[]))
+                    self.paths[name]=prev+[f"{name} assigned at line {node.lineno}"]
+                else:
+                    self.tainted.discard(name); self.origins.pop(name,None); self.paths.pop(name,None)
+        self.generic_visit(value)
+        # visit target/value subnodes without revisiting assignments
+        for target in node.targets: self.visit(target)
+
+    def visit_AugAssign(self,node):
+        if isinstance(node.target,ast.Name):
+            name=node.target.id
+            tainted,names=self.expr_taint(node.value)
+            if name in self.tainted: tainted=True; names=[name]+names
+            if tainted:
+                self.tainted.add(name)
+                self.paths[name]=self.paths.get(name,[])+[f"{name} updated at line {node.lineno}"]
+                self.origins.setdefault(name, self.origins.get(names[0], 'untrusted input') if names else 'untrusted input')
+        self.generic_visit(node.value)
+
+    def visit_AnnAssign(self,node):
+        if node.value is not None:
+            fake=ast.Assign(targets=[node.target],value=node.value); fake.lineno=node.lineno
+            self.visit_Assign(fake)
+
+    def visit_Call(self,node):
+        if isinstance(node.func,ast.Attribute) and node.func.attr=='execute' and node.args:
+            receiver=node.func.value
+            receiver_name=receiver.id if isinstance(receiver,ast.Name) else ''
+            looks_cursor=receiver_name in self.cursor_names or any(x in receiver_name.lower() for x in ('cursor','conn','connection','db'))
+            # A query should look SQL-like; custom execute methods are excluded.
+            query=node.args[0]
+            query_tainted, names=self.expr_taint(query)
+            sql_like=self.expr_is_sql(query) or (isinstance(query,ast.Name) and query.id in self.tainted)
+           # Parameter binding protects values, not untrusted SQL text
+           # concatenated into the query itself.
+            if looks_cursor and sql_like and query_tainted:
+                var=next((n for n in names if n!='input()'), 'input()')
+                origin=self.origins.get(var,'input()' if 'input()' in names else 'untrusted input')
+                path=[f"untrusted source: {origin}"]
+                path.extend(self.paths.get(var,[]))
+                path.append(f"SQL execution sink: {ast.unparse(node.func)}(...) at line {node.lineno}")
+                self.findings.append(Finding(self.filename,node.lineno,'HIGH','Untrusted data may reach SQL query text.',origin,f"{ast.unparse(node.func)}()",var,path,
+                    'Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().'))
+        self.generic_visit(node)
+
+def analyze_source(source: str, filename: str='<string>') -> List[Finding]:
+    try: tree=ast.parse(source, filename=filename)
+    except SyntaxError as e:
+        raise ValueError(f"Python syntax error at line {e.lineno}: {e.msg}") from e
+    analyzer=Analyzer(filename,source); analyzer.visit(tree)
+    # De-duplicate repeated visitor reports by sink line and variable.
+    unique={ (f.line,f.variable):f for f in analyzer.findings }
+    return list(unique.values())
+
+def analyze_file(path: str) -> List[Finding]:
+    with open(path,'r',encoding='utf-8') as f: source=f.read()
+    return analyze_source(source,path)

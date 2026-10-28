@@ -1,0 +1,123 @@
+{
+  "dataset": "dataset\\labels.csv",
+  "total_examples": 25,
+  "scoring_convention": "unsafe = positive; safe and tricky = negative; tricky cases are also reported separately",
+  "label_counts": {
+    "safe": 7,
+    "unsafe": 12,
+    "tricky": 6
+  },
+  "metrics": {
+    "Bandit": {
+      "total_examples": 25,
+      "TP": 6,
+      "FP": 5,
+      "FP_breakdown": {
+        "safe": 2,
+        "tricky": 3
+      },
+      "FN": 6,
+      "TN": 8,
+      "TN_breakdown": {
+        "safe": 5,
+        "tricky": 3
+      },
+      "precision": 0.5455,
+      "recall": 0.5,
+      "f1_score": 0.5217,
+      "per_category": {
+        "safe": {
+          "total": 7,
+          "flagged": 2,
+          "not_flagged": 5
+        },
+        "tricky": {
+          "total": 6,
+          "flagged": 3,
+          "not_flagged": 3
+        },
+        "unsafe": {
+          "total": 12,
+          "flagged": 6,
+          "not_flagged": 6
+        }
+      }
+    },
+    "Semgrep": {
+      "total_examples": 25,
+      "TP": 6,
+      "FP": 6,
+      "FP_breakdown": {
+        "safe": 2,
+        "tricky": 4
+      },
+      "FN": 6,
+      "TN": 7,
+      "TN_breakdown": {
+        "safe": 5,
+        "tricky": 2
+      },
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "per_category": {
+        "safe": {
+          "total": 7,
+          "flagged": 2,
+          "not_flagged": 5
+        },
+        "tricky": {
+          "total": 6,
+          "flagged": 4,
+          "not_flagged": 2
+        },
+        "unsafe": {
+          "total": 12,
+          "flagged": 6,
+          "not_flagged": 6
+        }
+      }
+    },
+    "SQLGuard-C": {
+      "total_examples": 25,
+      "TP": 12,
+      "FP": 0,
+      "FP_breakdown": {
+        "safe": 0,
+        "tricky": 0
+      },
+      "FN": 0,
+      "TN": 13,
+      "TN_breakdown": {
+        "safe": 7,
+        "tricky": 6
+      },
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "per_category": {
+        "safe": {
+          "total": 7,
+          "flagged": 0,
+          "not_flagged": 7
+        },
+        "tricky": {
+          "total": 6,
+          "flagged": 0,
+          "not_flagged": 6
+        },
+        "unsafe": {
+          "total": 12,
+          "flagged": 12,
+          "not_flagged": 0
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Results apply only to the current labeled dataset.",
+    "The tricky category is scored as negative by convention.",
+    "This benchmark does not establish real-world detection accuracy.",
+    "Tool configurations and versions should be documented separately."
+  ]
+}
