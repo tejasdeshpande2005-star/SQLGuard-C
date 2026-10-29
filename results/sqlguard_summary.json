@@ -59,7 +59,25 @@
           "query assigned at line 10",
           "SQL execution sink: cursor.execute(...) at line 11"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 290,
+        "end_offset": 392,
+        "start_line": 10,
+        "start_column": 12,
+        "end_line": 10,
+        "end_column": 114,
+        "expression": "\"SELECT id, username FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\"",
+        "highlight_ranges": [
+          {
+            "start_offset": 290,
+            "end_offset": 392,
+            "start_line": 10,
+            "start_column": 12,
+            "end_line": 10,
+            "end_column": 114,
+            "expression": "\"SELECT id, username FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\""
+          }
+        ]
       }
     ],
     "unsafe/unsafe_02_concat_variable.py": [
@@ -77,7 +95,34 @@
           "query updated at line 12",
           "SQL execution sink: cursor.execute(...) at line 13"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 207,
+        "end_offset": 220,
+        "start_line": 7,
+        "start_column": 20,
+        "end_line": 7,
+        "end_column": 33,
+        "expression": "category: str",
+        "highlight_ranges": [
+          {
+            "start_offset": 207,
+            "end_offset": 220,
+            "start_line": 7,
+            "start_column": 20,
+            "end_line": 7,
+            "end_column": 33,
+            "expression": "category: str"
+          },
+          {
+            "start_offset": 222,
+            "end_offset": 236,
+            "start_line": 7,
+            "start_column": 35,
+            "end_line": 7,
+            "end_column": 49,
+            "expression": "min_price: str"
+          }
+        ]
       }
     ],
     "unsafe/unsafe_03_fstring_direct.py": [
@@ -95,7 +140,25 @@
           "query assigned at line 10",
           "SQL execution sink: cursor.execute(...) at line 11"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 284,
+        "end_offset": 368,
+        "start_line": 10,
+        "start_column": 12,
+        "end_line": 10,
+        "end_column": 96,
+        "expression": "f\"SELECT account_id, balance, owner FROM accounts WHERE account_id = '{account_id}'\"",
+        "highlight_ranges": [
+          {
+            "start_offset": 284,
+            "end_offset": 368,
+            "start_line": 10,
+            "start_column": 12,
+            "end_line": 10,
+            "end_column": 96,
+            "expression": "f\"SELECT account_id, balance, owner FROM accounts WHERE account_id = '{account_id}'\""
+          }
+        ]
       }
     ],
     "unsafe/unsafe_04_fstring_multiline.py": [
@@ -114,7 +177,25 @@
           "query assigned at line 10",
           "SQL execution sink: cursor.execute(...) at line 15"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 298,
+        "end_offset": 399,
+        "start_line": 10,
+        "start_column": 12,
+        "end_line": 14,
+        "end_column": 7,
+        "expression": "f\"\"\"\n        UPDATE users\n        SET email = '{new_email}'\n        WHERE user_id = {user_id}\n    \"\"\"",
+        "highlight_ranges": [
+          {
+            "start_offset": 298,
+            "end_offset": 399,
+            "start_line": 10,
+            "start_column": 12,
+            "end_line": 14,
+            "end_column": 7,
+            "expression": "f\"\"\"\n        UPDATE users\n        SET email = '{new_email}'\n        WHERE user_id = {user_id}\n    \"\"\""
+          }
+        ]
       }
     ],
     "unsafe/unsafe_05_percent_format.py": [
@@ -132,7 +213,25 @@
           "query assigned at line 10",
           "SQL execution sink: cursor.execute(...) at line 11"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 310,
+        "end_offset": 386,
+        "start_line": 10,
+        "start_column": 12,
+        "end_line": 10,
+        "end_column": 88,
+        "expression": "\"SELECT id, name, salary FROM employees WHERE department = '%s'\" % dept_name",
+        "highlight_ranges": [
+          {
+            "start_offset": 310,
+            "end_offset": 386,
+            "start_line": 10,
+            "start_column": 12,
+            "end_line": 10,
+            "end_column": 88,
+            "expression": "\"SELECT id, name, salary FROM employees WHERE department = '%s'\" % dept_name"
+          }
+        ]
       }
     ],
     "unsafe/unsafe_06_str_format.py": [
@@ -150,7 +249,25 @@
           "query assigned at line 10",
           "SQL execution sink: cursor.execute(...) at line 11"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 301,
+        "end_offset": 380,
+        "start_line": 10,
+        "start_column": 12,
+        "end_line": 10,
+        "end_column": 91,
+        "expression": "\"SELECT order_id, total, status FROM orders WHERE status = '{}'\".format(status)",
+        "highlight_ranges": [
+          {
+            "start_offset": 301,
+            "end_offset": 380,
+            "start_line": 10,
+            "start_column": 12,
+            "end_line": 10,
+            "end_column": 91,
+            "expression": "\"SELECT order_id, total, status FROM orders WHERE status = '{}'\".format(status)"
+          }
+        ]
       }
     ],
     "unsafe/unsafe_07_format_named.py": [
@@ -168,7 +285,25 @@
           "query assigned at line 10",
           "SQL execution sink: cursor.execute(...) at line 11"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 272,
+        "end_offset": 351,
+        "start_line": 10,
+        "start_column": 12,
+        "end_line": 10,
+        "end_column": 91,
+        "expression": "\"DELETE FROM user_sessions WHERE token = '{token}'\".format(token=session_token)",
+        "highlight_ranges": [
+          {
+            "start_offset": 272,
+            "end_offset": 351,
+            "start_line": 10,
+            "start_column": 12,
+            "end_line": 10,
+            "end_column": 91,
+            "expression": "\"DELETE FROM user_sessions WHERE token = '{token}'\".format(token=session_token)"
+          }
+        ]
       }
     ],
     "unsafe/unsafe_08_multiple_inputs.py": [
@@ -187,7 +322,25 @@
           "query assigned at line 11",
           "SQL execution sink: cursor.execute(...) at line 19"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 215,
+        "end_offset": 332,
+        "start_line": 12,
+        "start_column": 8,
+        "end_line": 16,
+        "end_column": 13,
+        "expression": "\"SELECT * FROM users WHERE username = '\"\n        + username\n        + \"' AND email = '\"\n        + email\n        + \"'\"",
+        "highlight_ranges": [
+          {
+            "start_offset": 215,
+            "end_offset": 332,
+            "start_line": 12,
+            "start_column": 8,
+            "end_line": 16,
+            "end_column": 13,
+            "expression": "\"SELECT * FROM users WHERE username = '\"\n        + username\n        + \"' AND email = '\"\n        + email\n        + \"'\""
+          }
+        ]
       }
     ],
     "unsafe/unsafe_09_username_only.py": [
@@ -205,7 +358,25 @@
           "query assigned at line 9",
           "SQL execution sink: cursor.execute(...) at line 10"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 169,
+        "end_offset": 226,
+        "start_line": 9,
+        "start_column": 12,
+        "end_line": 9,
+        "end_column": 69,
+        "expression": "\"SELECT * FROM users WHERE username = '\" + username + \"'\"",
+        "highlight_ranges": [
+          {
+            "start_offset": 169,
+            "end_offset": 226,
+            "start_line": 9,
+            "start_column": 12,
+            "end_line": 9,
+            "end_column": 69,
+            "expression": "\"SELECT * FROM users WHERE username = '\" + username + \"'\""
+          }
+        ]
       }
     ],
     "unsafe/unsafe_10_email_only.py": [
@@ -223,7 +394,25 @@
           "query assigned at line 9",
           "SQL execution sink: cursor.execute(...) at line 10"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 163,
+        "end_offset": 214,
+        "start_line": 9,
+        "start_column": 12,
+        "end_line": 9,
+        "end_column": 63,
+        "expression": "\"SELECT * FROM users WHERE email = '\" + email + \"'\"",
+        "highlight_ranges": [
+          {
+            "start_offset": 163,
+            "end_offset": 214,
+            "start_line": 9,
+            "start_column": 12,
+            "end_line": 9,
+            "end_column": 63,
+            "expression": "\"SELECT * FROM users WHERE email = '\" + email + \"'\""
+          }
+        ]
       }
     ],
     "unsafe/unsafe_11_helper_function.py": [
@@ -241,7 +430,25 @@
           "query assigned at line 5",
           "SQL execution sink: cursor.execute(...) at line 6"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 63,
+        "end_offset": 120,
+        "start_line": 5,
+        "start_column": 12,
+        "end_line": 5,
+        "end_column": 69,
+        "expression": "\"SELECT * FROM users WHERE username = '\" + username + \"'\"",
+        "highlight_ranges": [
+          {
+            "start_offset": 63,
+            "end_offset": 120,
+            "start_line": 5,
+            "start_column": 12,
+            "end_line": 5,
+            "end_column": 69,
+            "expression": "\"SELECT * FROM users WHERE username = '\" + username + \"'\""
+          }
+        ]
       }
     ],
     "unsafe/unsafe_12_mixed_parameterization.py": [
@@ -259,7 +466,25 @@
           "query assigned at line 11",
           "SQL execution sink: cursor.execute(...) at line 16"
         ],
-        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute()."
+        "repair": "Use a parameterized query: keep SQL placeholders in the query string and pass user values separately to execute().",
+        "start_offset": 224,
+        "end_offset": 296,
+        "start_line": 12,
+        "start_column": 8,
+        "end_line": 13,
+        "end_column": 21,
+        "expression": "\"SELECT * FROM users WHERE username = ? ORDER BY \"\n        + sort_column",
+        "highlight_ranges": [
+          {
+            "start_offset": 224,
+            "end_offset": 296,
+            "start_line": 12,
+            "start_column": 8,
+            "end_line": 13,
+            "end_column": 21,
+            "expression": "\"SELECT * FROM users WHERE username = ? ORDER BY \"\n        + sort_column"
+          }
+        ]
       }
     ],
     "tricky/tricky_01_user_input_not_in_sink.py": [],

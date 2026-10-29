@@ -1,4 +1,3 @@
-
 import { useRef, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
@@ -21,13 +20,16 @@ const safeSample = `def search_user(cursor, username):
     cursor.execute(query, (username,))
 `;
 
+const API_BASE = "http://127.0.0.1:8000";
+
 export default function App() {
   const [code, setCode] = useState(vulnerableSample);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedLine, setSelectedLine] = useState(null);
-
+  const [repairResult, setRepairResult] = useState(null);
+  const [repairLoading, setRepairLoading] = useState(false);
   const editorViewRef = useRef(null);
 
   const extensions = [
@@ -40,9 +42,7 @@ export default function App() {
   function clearHighlights() {
     const view = editorViewRef.current;
     if (view) {
-      view.dispatch({
-        effects: setUnsafeRangesEffect.of([]),
-      });
+      view.dispatch({ effects: setUnsafeRangesEffect.of([]) });
     }
   }
 
@@ -50,52 +50,47 @@ export default function App() {
     setResult(null);
     setError("");
     setSelectedLine(null);
+    setRepairResult(null);
     clearHighlights();
   }
 
   function applyHighlights(findings) {
     const view = editorViewRef.current;
     if (!view) return;
-
     const ranges = findings.flatMap((finding) =>
-      Array.isArray(finding.highlight_ranges)
-        ? finding.highlight_ranges
-        : []
+      Array.isArray(finding.highlight_ranges) ? finding.highlight_ranges : []
     );
+    view.dispatch({ effects: setUnsafeRangesEffect.of(ranges) });
+  }
 
-    view.dispatch({
-      effects: setUnsafeRangesEffect.of(ranges),
-    });
+  async function readApiResponse(response, fallbackMessage) {
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const detail = data.detail;
+      const message =
+        typeof detail === "string"
+          ? detail
+          : detail?.message || detail?.error || fallbackMessage;
+      throw new Error(message);
+    }
+    return data;
   }
 
   async function analyzeCode() {
     setLoading(true);
     setError("");
     setResult(null);
+    setRepairResult(null);
     setSelectedLine(null);
     clearHighlights();
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/analyze", {
+      const response = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        const detail = data.detail;
-        const message =
-          typeof detail === "string"
-            ? detail
-            : detail?.message ||
-              detail?.error ||
-              "Analysis request failed.";
-
-        throw new Error(message);
-      }
-
+      const data = await readApiResponse(response, "Analysis request failed.");
       const findings = data.findings ?? [];
       setResult(data);
       applyHighlights(findings);
@@ -110,6 +105,47 @@ export default function App() {
     }
   }
 
+  async function generateRepair() {
+    setRepairLoading(true);
+    setError("");
+    setRepairResult(null);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/repair`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const data = await readApiResponse(response, "Repair request failed.");
+      setRepairResult(data);
+    } catch (err) {
+      setError(
+        err.message === "Failed to fetch"
+          ? "Cannot reach the Python backend. Make sure it is running on port 8000."
+          : err.message
+      );
+    } finally {
+      setRepairLoading(false);
+    }
+  }
+
+  function downloadRepairedFile() {
+    if (!repairResult?.success || typeof repairResult.repaired_code !== "string") {
+      return;
+    }
+    const blob = new Blob([repairResult.repaired_code], {
+      type: "text/x-python;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "repaired_candidate.py";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleFileUpload(event) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -119,7 +155,6 @@ export default function App() {
       event.target.value = "";
       return;
     }
-
     if (file.size > 100_000) {
       setError("The Python file must be smaller than 100 KB.");
       event.target.value = "";
@@ -133,7 +168,6 @@ export default function App() {
     } catch {
       setError("Could not read the selected file.");
     }
-
     event.target.value = "";
   }
 
@@ -146,14 +180,9 @@ export default function App() {
 
     const doc = view.state.doc;
     const lineNumber = Number(finding.line ?? finding.line_number);
-
-    let start;
-    let end;
-
     const ranges = Array.isArray(finding.highlight_ranges)
       ? finding.highlight_ranges
       : [];
-
     const validRange = ranges.find(
       (range) =>
         Number.isInteger(range.start_offset) &&
@@ -163,6 +192,8 @@ export default function App() {
         range.end_offset <= doc.length
     );
 
+    let start;
+    let end;
     if (validRange) {
       start = validRange.start_offset;
       end = validRange.end_offset;
@@ -181,12 +212,10 @@ export default function App() {
 
     setSelectedLine(lineNumber);
     setError("");
-
     view.dispatch({
       selection: { anchor: start, head: end },
       effects: EditorView.scrollIntoView(start, { y: "center" }),
     });
-
     view.focus();
   }
 
@@ -203,10 +232,8 @@ export default function App() {
             <small>Security analyzer</small>
           </div>
         </div>
-
         <p className="nav-heading">WORKSPACE</p>
         <div className="nav-link active">⌕ &nbsp; Code analysis</div>
-
         <div className="sidebar-footer">
           <span className="status-dot" />
           Local static analysis
@@ -219,8 +246,7 @@ export default function App() {
             <p className="breadcrumb">Workspace / Code analysis</p>
             <h1>SQL Injection Analyzer</h1>
             <p className="subtitle">
-              Inspect Python source code for potential SQL injection
-              vulnerabilities.
+              Inspect Python source code for potential SQL injection vulnerabilities.
             </p>
           </div>
           <span className="engine-label">⬡ SQLGuard-C engine</span>
@@ -231,19 +257,30 @@ export default function App() {
             <span>SUBMITTED CHARACTERS</span>
             <strong>{code.length}</strong>
           </div>
-
           <div className="stat">
             <span>FINDINGS</span>
             <strong>{result ? findingCount : "—"}</strong>
           </div>
-
           <div className="stat">
             <span>STATUS</span>
             <strong className="status-text">
-              {loading ? "Running…" : result ? "Complete" : "Ready"}
+              {loading || repairLoading
+                ? "Running…"
+                : repairResult
+                  ? "Repair ready"
+                  : result
+                    ? "Complete"
+                    : "Ready"}
             </strong>
           </div>
         </section>
+
+        {error && (
+          <div className="error-box" role="alert">
+            <strong>Request error</strong>
+            <p>{error}</p>
+          </div>
+        )}
 
         <section className="workspace">
           <div className="panel">
@@ -265,7 +302,6 @@ export default function App() {
               >
                 Vulnerable sample
               </button>
-
               <button
                 type="button"
                 onClick={() => {
@@ -275,7 +311,6 @@ export default function App() {
               >
                 Safe sample
               </button>
-
               <label className="upload-button">
                 ↑ Upload .py file
                 <input
@@ -299,7 +334,7 @@ export default function App() {
                   setCode(value);
                   resetResults();
                 }}
-                editable={!loading}
+                editable={!loading && !repairLoading}
                 basicSetup={{
                   lineNumbers: true,
                   foldGutter: true,
@@ -313,21 +348,32 @@ export default function App() {
 
             {selectedLine && (
               <p className="selected-line">
-                Navigated to finding at line {selectedLine}.
-                Unsafe source ranges are marked in red when available.
+                Navigated to finding at line {selectedLine}. Unsafe ranges are
+                marked in red when available.
               </p>
             )}
 
             <button
               className="analyze-button"
               onClick={analyzeCode}
-              disabled={loading || !code.trim()}
+              disabled={loading || repairLoading || !code.trim()}
             >
               {loading ? "Analyzing…" : "⌕ Analyze code"}
             </button>
-
+            <button
+              className="secondary-button"
+              onClick={generateRepair}
+              disabled={
+                loading ||
+                repairLoading ||
+                !result ||
+                findingCount === 0
+              }
+            >
+              {repairLoading ? "Generating repair…" : "Generate Repair"}
+            </button>
             <p className="hint">
-              Static analysis only — submitted code is not executed.
+              Static analysis only — submitted Python code is not executed.
             </p>
           </div>
 
@@ -339,7 +385,7 @@ export default function App() {
               </div>
             </div>
 
-            {!result && !loading && !error && (
+            {!result && !loading && (
               <div className="empty-state">
                 <div className="empty-symbol">⬡</div>
                 <h3>Ready to analyze</h3>
@@ -356,25 +402,12 @@ export default function App() {
               </div>
             )}
 
-            {error && (
-              <div className="error-box" role="alert">
-                <strong>Analysis or navigation error</strong>
-                <p>{error}</p>
-              </div>
-            )}
-
             {result && (
               <div className="results">
-                <div
-                  className={
-                    findingCount ? "verdict danger" : "verdict safe"
-                  }
-                >
+                <div className={findingCount ? "verdict danger" : "verdict safe"}>
                   <strong>
                     {findingCount
-                      ? `⚠ ${findingCount} potential finding${
-                          findingCount === 1 ? "" : "s"
-                        } detected`
+                      ? `⚠ ${findingCount} potential finding${findingCount === 1 ? "" : "s"} detected`
                       : "✓ No findings reported"}
                   </strong>
                   <p>{result.message}</p>
@@ -382,14 +415,13 @@ export default function App() {
 
                 {findings.length > 0 && (
                   <div className="findings-toolbar">
-                    Click a finding to navigate to its reported source range.
+                    Click any finding to select its corresponding source range.
                   </div>
                 )}
 
                 {findings.map((finding, index) => {
                   const line = Number(finding.line ?? finding.line_number);
                   const isSelected = selectedLine === line;
-
                   return (
                     <article
                       className={`finding finding-clickable ${
@@ -414,26 +446,15 @@ export default function App() {
                         </strong>
                         <span>{finding.severity || "MEDIUM"}</span>
                       </div>
-
-                      {Number.isInteger(line) && line > 0 && (
-                        <p>Line: {line}</p>
-                      )}
-
+                      {Number.isInteger(line) && line > 0 && <p>Line: {line}</p>}
                       {finding.expression && (
                         <div className="finding-expression">
                           <strong>Reported expression</strong>
                           <code>{finding.expression}</code>
                         </div>
                       )}
-
-                      {finding.source && (
-                        <p>Source: {String(finding.source)}</p>
-                      )}
-
-                      {finding.sink && (
-                        <p>Sink: {String(finding.sink)}</p>
-                      )}
-
+                      {finding.source && <p>Source: {String(finding.source)}</p>}
+                      {finding.sink && <p>Sink: {String(finding.sink)}</p>}
                       {finding.path && (
                         <p>
                           <strong>Source-to-sink path:</strong>{" "}
@@ -442,14 +463,12 @@ export default function App() {
                             : String(finding.path)}
                         </p>
                       )}
-
                       {finding.repair && (
                         <div className="repair">
                           <strong>Suggested remediation</strong>
                           <p>{finding.repair}</p>
                         </div>
                       )}
-
                       <p className="click-hint">
                         {isSelected
                           ? "Finding selected in editor"
@@ -459,27 +478,65 @@ export default function App() {
                   );
                 })}
 
-                {findingCount > findings.length && (
-                  <p className="disclaimer">
-                    The API reported {findingCount} findings but returned only{" "}
-                    {findings.length} finding details.
-                  </p>
-                )}
-
                 {findingCount === 0 && (
                   <p className="disclaimer">
-                    No findings were reported by the analyzer. This does not
-                    prove the code is secure.
+                    No findings were reported. This does not prove the code is secure.
                   </p>
                 )}
-
-                {result.note && (
-                  <p className="disclaimer">{result.note}</p>
-                )}
+                {result.note && <p className="disclaimer">{result.note}</p>}
               </div>
             )}
           </div>
         </section>
+
+        {repairResult && (
+          <section className="panel repair-preview">
+            <div className="panel-header">
+              <div>
+                <h2>03 / Repair Preview</h2>
+                <p>Review the generated candidate before using it.</p>
+              </div>
+              {repairResult.success && (
+                <span className="file-badge">PYTHON</span>
+              )}
+            </div>
+
+            <div className={`verdict ${repairResult.success ? (repairResult.validation_passed ? "safe" : "danger") : "danger"} repair-status`}>
+              <strong>
+                {!repairResult.success
+                  ? "Repair not generated"
+                  : repairResult.validation_passed
+                    ? "Candidate generated — no findings reported on re-analysis"
+                    : "Candidate generated — findings remain"}
+              </strong>
+              <p>{repairResult.message}</p>
+              {repairResult.success && (
+                <p>
+                  Original findings: {repairResult.original_findings_count} ·
+                  Remaining findings: {repairResult.remaining_findings_count}
+                </p>
+              )}
+            </div>
+
+            {repairResult.success && (
+              <>
+                <pre className="repaired-code">
+                  <code>{repairResult.repaired_code}</code>
+                </pre>
+                <button
+                  type="button"
+                  className="analyze-button download-button"
+                  onClick={downloadRepairedFile}
+                >
+                  Download repaired_candidate.py
+                </button>
+                <p className="disclaimer repair-warning">
+                  {repairResult.warning}
+                </p>
+              </>
+            )}
+          </section>
+        )}
 
         <footer>
           SQLGuard-C · Compiler-based security analysis · Local development
